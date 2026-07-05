@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Administrace — Adam Horvath</title>
+<meta name="robots" content="noindex, nofollow">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" href="favicon-32.png" type="image/png">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body class="admin-body">
+
+<div class="bg-layer"></div>
+<div class="noise"></div>
+
+<!-- LOGIN -->
+<div class="admin-login">
+  <div class="login-box glass">
+    <h1>Administrace</h1>
+    <p>Zadejte heslo pro přístup do administrace.</p>
+    <form id="login-form">
+      <input type="password" id="login-input" placeholder="Heslo" autocomplete="off" autofocus>
+      <div class="login-error"></div>
+      <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center;">Přihlásit se</button>
+    </form>
+    <p style="margin-top:18px;"><a href="index.html" style="color:var(--text-muted); font-size:.82rem;">← Zpět na web</a></p>
+  </div>
+</div>
+
+<!-- DASHBOARD SHELL -->
+<div class="admin-shell" style="display:none;">
+  <aside class="sidebar">
+    <div class="sidebar-brand">ADAM<span>.</span>ADMIN</div>
+    <nav class="side-nav">
+      <button class="side-link active" data-view="dashboard"><i data-lucide="layout-dashboard"></i>Přehled</button>
+      <button class="side-link" data-view="hero"><i data-lucide="home"></i>Domovská stránka</button>
+      <button class="side-link" data-view="pricing"><i data-lucide="tag"></i>Ceník</button>
+      <button class="side-link" data-view="process"><i data-lucide="list-ordered"></i>Proces</button>
+      <button class="side-link" data-view="services"><i data-lucide="layers"></i>Služby</button>
+      <button class="side-link" data-view="projects"><i data-lucide="briefcase"></i>Ukázky prací</button>
+      <button class="side-link" data-view="testimonials"><i data-lucide="quote"></i>Reference</button>
+      <button class="side-link" data-view="faq"><i data-lucide="help-circle"></i>FAQ</button>
+      <button class="side-link" data-view="social"><i data-lucide="share-2"></i>Sociální sítě</button>
+      <button class="side-link" data-view="leads"><i data-lucide="inbox"></i>Poptávky</button>
+      <button class="side-link" data-view="audit"><i data-lucide="scan-search"></i>Audit poptávky</button>
+      <button class="side-link" data-view="notes"><i data-lucide="sticky-note"></i>Poznámky</button>
+      <button class="side-link" data-view="calendar"><i data-lucide="calendar"></i>Kalendář</button>
+      <button class="side-link" data-view="settings"><i data-lucide="settings"></i>Nastavení</button>
+    </nav>
+    <div class="side-foot">
+      <button class="side-link" onclick="logout()"><i data-lucide="log-out"></i>Odhlásit se</button>
+    </div>
+  </aside>
+
+  <main class="admin-main">
+    <button id="sidebar-toggle" class="btn-icon" style="display:none; margin-bottom:16px;">☰</button>
+    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+    <!-- DASHBOARD -->
+    <section id="view-dashboard" class="view active">
+      <div class="admin-topbar"><div><h1 class="admin-title">Přehled</h1><p class="admin-sub">Aktuální stav webu a poptávek.</p></div></div>
+      <div class="stats-grid" id="dashboard-stats"></div>
+      <div class="panel glass">
+        <div class="panel-head"><h3>Rychlé odkazy</h3></div>
+        <p style="color:var(--text-muted); font-size:.9rem;">Veškeré změny provedené v administraci se okamžitě promítnou na veřejném webu. Otevři si <a href="index.html" target="_blank" style="color:var(--accent-2);">veřejný web v nové záložce</a> a sleduj úpravy živě.</p>
+      </div>
+    </section>
+
+    <!-- HERO -->
+    <section id="view-hero" class="view">
+      <div class="admin-topbar"><div><h1 class="admin-title">Domovská stránka</h1><p class="admin-sub">Hlavní nabídka, kterou návštěvník uvidí jako první.</p></div></div>
+      <form id="hero-form" class="panel glass">
+        <div class="form-row">
+          <div class="f"><label>Jméno</label><input name="name" type="text" required></div>
+          <div class="f"><label>Fotografie</label><input name="photo" type="file" accept="image/*"></div>
+        </div>
+        <div class="f"><label>Krátký štítek nad nadpisem</label><input name="eyebrow" type="text" placeholder="Weby na předplatné"></div>
+        <div class="f"><label>Krátký štítek (EN)</label><input name="eyebrow_en" type="text" placeholder="Websites on subscription"></div>
+        <div class="f"><label>Hlavní nadpis (Enter = nový řádek)</label><textarea name="headline" rows="2"></textarea></div>
+        <div class="f"><label>Hlavní nadpis (EN)</label><textarea name="headline_en" rows="2"></textarea></div>
+        <div class="f"><label>Podnadpis</label><textarea name="subheadline" rows="3"></textarea></div>
+        <div class="f"><label>Podnadpis (EN)</label><textarea name="subheadline_en" rows="3"></textarea></div>
+        <div class="f"><label>Náhled fotografie</label><div id="hero-photo-preview" class="thumb" style="width:90px;height:90px;border-radius:14px;overflow:hidden;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;"></div></div>
+        <button type="submit" class="btn btn-primary btn-sm">Uložit</button>
+      </form>
+    </section>
+
+    <!-- PRICING -->
+    <section id="view-pricing" class="view">
+      <div class="admin-topbar"><div><h1 class="admin-title">Ceník</h1><p class="admin-sub">Karta s cenou a podmínkami, kterou vidí každý návštěvník.</p></div></div>
+      <form id="pricing-form" class="panel glass">
+        <div class="form-row">
+          <div class="f"><label>Srovnávací cena (přeškrtnutá, volitelné)</label><input name="comparePrice" type="number" min="0" placeholder="25999"></div>
+          <div class="f"><label>Popisek ke srovnávací ceně</label><input name="comparePriceLabel" placeholder="Průměrná cena webu na zakázku od agentury"></div>
+        </div>
+        <div class="f"><label>Popisek ke srovnávací ceně (EN)</label><input name="comparePriceLabel_en" placeholder="Average price of a custom agency website"></div>
+        <div class="form-row">
+          <div class="f"><label>Cena (číslo)</label><input name="price" type="number" min="0" required></div>
+          <div class="f"><label>Jednotka</label><input name="priceUnit" placeholder="Kč / měsíc" required></div>
+        </div>
+        <div class="f"><label>Jednotka (EN)</label><input name="priceUnit_en" placeholder="CZK / month"></div>
+        <div class="f"><label>Rychlost návrhu</label><input name="turnaround1" placeholder="První návrh do 5 dní"></div>
+        <div class="f"><label>Rychlost návrhu (EN)</label><input name="turnaround1_en" placeholder="First draft within 5 days"></div>
+        <div class="f"><label>Rychlost spuštění</label><input name="turnaround2" placeholder="Web online za 7–11 pracovních dní"></div>
+        <div class="f"><label>Rychlost spuštění (EN)</label><input name="turnaround2_en" placeholder="Live site within 7–11 business days"></div>
+        <div class="f"><label>Závazek</label><input name="commitment" placeholder="Bez závazku — zrušíte kdykoli"></div>
+        <div class="f"><label>Závazek (EN)</label><input name="commitment_en" placeholder="No commitment — cancel anytime"></div>
+        <div class="f"><label>Text garance (zvýrazněný box)</label><textarea name="guarantee" rows="2"></textarea></div>
+        <div class="f"><label>Text garance (EN)</label><textarea name="guarantee_en" rows="2"></textarea></div>
+        <button type="submit" class="btn btn-primary btn-sm">Uložit</button>
+      </form>
+    </section>
+
+    <!-- PROCESS -->
+    <section id="view-process" class="view">
+      <div class="admin-topbar"><div><h1 class="admin-title">Proces</h1><p class="admin-sub">Kroky „Jak to funguje“, v pořadí jak je vidí návštěvník.</p></div></div>
+      <form id="process-form" class="panel glass">
+        <div class="form-row">
+          <div class="f"><label>Název kroku</label><input name="title" required></div>
+          <div class="f"><label>Název kroku (EN)</label><input name="title_en"></div>
+        </div>
+        <div class="form-row">
+          <div class="f"><label>Popis</label><input name="desc" required></div>
+          <div class="f"><label>Popis (EN)</label><input name="desc_en"></div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm">+ Přidat krok</button>
+      </form>
+      <div class="panel glass"><div class="item-list" id="process-list"></div></div>
+    </section>
+
+    <!-- SERVICES -->
+    <section id="view-services" class="view">
+      <div class="admin-topbar"><div><h1 class="admin-title">Služby</h1><p class="admin-sub">Karty v sekci „Služby“ na veřejném webu.</p></div></div>
+      <form id="services-form" class="panel glass">
+        <div class="form-row">
+          <div class="f"><label>Název</label><input name="title" required></div>
+          <div class="f"><label>Název (EN)</label><input name="title_en"></div>
+        </div>
+        <div class="form-row">
+          <div class="f"><label>Popis</label><input name="desc" required></div>
+          <div class="f"><label>Popis (EN)</label><input name="desc_en"></div>
+        </div>
+        <div class="f"><label>Ikona (název z knihovny Lucide)</label><input name="icon" placeholder="layout-template"></div>
+        <button type="submit" class="btn btn-primary btn-sm">Uložit službu</button>
+      </form>
+      <div class="panel glass"><div class="item-list" id="services-list"></div></div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section id="view-projects" class="view">
+      <div class="admin-topbar"><div><h1 class="admin-title">Ukázky prací</h1><p class="admin-sub">Weby, které jsi postavil — nejlepší způsob, jak přesvědčit nové klienty.</p></div></div>
+      <form id="projects-form" class="panel glass">
+        <div class="form-row">
+          <div class="f"><label>Název</label><input name="title" required></div>
+          <div class="f"><label>Název (EN)</label><input name="title_en"></div>
+        </div>
+        <div class="form-row">
+          <div class="f"><label>Kategorie</label><input name="category" placeholder="Řemeslo, E-commerce, Služby..."></div>
+          <div class="f"><label>Kategorie (EN)</label><input name="category_en" placeholder="Craft, E-commerce, Services..."></div>
+        </div>
+        <div class="f"><label>Popis</label><input name="desc"></div>
+        <div class="f"><label>Popis (EN)</label><input name="desc_en"></div>
+        <div class="form-row">
+          <div class="f"><label>Obrázek / náhled</label><input name="image" type="file" accept="image/*"></div>
+          <div class="f"><label>Odkaz na živý web</label><input name="url" type="url" placeholder="https://..."></div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm">Uložit ukázku</button>
+      </form>
+      <div class="panel glass"><div class="item-list" id="projects-list"></div></div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section id="view-testimonials" class="view">
+      <div class="admin-topbar"><div><h1 class="admin-title">Reference</h1><p class="admin-sub">Co o tobě říkají klienti.</p></div></div>
+      <form id="testimonials-form" class="panel glass">
+        <div class="form-row">
+          <div class="f"><label>Jméno</label><input name="name" required></div>
+          <div class="f"><label>Firma / role</label><input name="role"></div>
+        </div>
+        <div class="f"><label>Firma / role (EN)</label><input name="role_en"></div>
+        <div class="f"><label>Text reference</label><textarea name="text" rows="3"></textarea></div>
+        <div class="f"><label>Text reference (EN)</label><textarea name="text_en" rows="3"></textarea></div>
+        <div class="f"><label>Fotografie</label><input name="avatar" type="file" accept="image/*"></div>
+        <button type="submit" class="btn btn-primary btn-sm">Uložit referenci</button>
+      </form>
+      <div class="panel glass"><div class="item-list" id="testimonials-list"></div></div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="view-faq" class="view">
+      <div class="admin-topbar"><div><h1 class="admin-title">FAQ</h1><p class="admin-sub">Časté dotazy — pomáhají překonat váhání před poptávkou.</p></div></div>
+      <form id="faq-form" class="panel glass">
+        <div class="f"><label>Otázka</label><input name="q" required></div>
+        <div class="f"><label>Otázka (EN)</label><input name="q_en"></div>
+        <div class="f"><label>Odpověď</label><textarea name="a" rows="3" required></textarea></div>
+        <div class="f"><label>Odpověď (EN)</label><textarea name="a_en" rows="3"></textarea></div>
+        <button type="submit" class="btn btn-primary btn-sm">+ Přidat otázku</button>
+      </form>
+      <div class="panel glass"><div class="item-list" id="faq-list"></div></div>
+    </section>
+
+    <!-- SOCIAL -->
+    <section id="view-social" class="view">
+      <div class="admin-topbar"><div><h1 class="admin-title">Sociální sítě a kontakty</h1><p class="admin-sub">Zobrazí se v sekci Kontakty i v patičce webu.</p></div></div>
+      <form id="social-form" class="panel glass">
+        <div class="form-row">
+          <div class="f"><label>Facebook (URL)</label><input name="facebook" type="url"></div>
+          <div class="f"><label>Instagram (URL)</label><input name="instagram" type="url"></div>
+          <div class="f"><label>LinkedIn (URL)</label><input name="linkedin" type="url"></div>
+          <div class="f"><label>TikTok (URL)</label><input name="tiktok" type="url"></div>
+          <div class="f"><label>GitHub (URL)</label><input name="github" type="url"></div>
+          <div class="f"><label>Discord (URL)</label><input name="discord" type="url"></div>
+          <div class="f"><label>E‑mail</label><input name="email" type="email"></div>
+          <div class="f"><label>Telefon</label><input name="phone" type="tel"></div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm">Uložit</button>
+      </form>
+    </section>
+
+    <!-- LEADS -->
+    <section id="view-leads" class="view">
+      <div class="admin-topbar"><div><h1 class="admin-title">Poptávky</h1><p class="admin-sub">Zprávy odeslané přes poptávkový formulář na webu.</p></div></div>
+      <div class="panel glass"><div class="item-list" id="leads-list"></div></div>
+    </section>
+
+    <!-- AUDIT REQUESTS -->
+    <section id="view-audit" class="view">
+      <div class="admin-topbar"><div><h1 class="admin-title">Audit poptávky</h1><p class="admin-sub">URL a e-maily z formuláře „Audit webu“. Zatím se jen sbírají — až bude hotový backend pro reálnou AI analýzu, tady uvidíš i výsledky.</p></div></div>
+      <div class="panel glass"><div class="item-list" id="audit-list"></div></div>
+    </section>
+
+    <!-- NOTES -->
+    <section id="view-notes" class="view">
+      <div class="admin-topbar"><div><h1 class="admin-title">Poznámky</h1><p class="admin-sub">Osobní poznámky a úkoly — nejsou veřejné.</p></div></div>
+      <form id="notes-form" class="panel glass">
+        <div class="f"><label>Text</label><textarea name="text" rows="3" required></textarea></div>
+        <div class="form-row">
+          <div class="f"><label>Barva</label><input name="color" type="color" value="#7c5cff"></div>
+          <div class="f"><label>Priorita</label>
+            <select name="priority"><option value="low">Nízká</option><option value="med" selected>Střední</option><option value="high">Vysoká</option></select>
+          </div>
+        </div>
+        <div class="f"><label>Štítky (oddělte čárkou)</label><input name="tags" placeholder="klient, follow-up"></div>
+        <div class="f-row-inline" style="margin-bottom:14px;">
+          <input type="checkbox" name="add-cal" id="note-add-cal">
+          <label for="note-add-cal" style="margin:0;">Přidat do kalendáře</label>
+        </div>
+        <div class="f" id="note-cal-date" style="display:none;"><label>Datum</label><input name="cal-date" type="date"></div>
+        <button type="submit" class="btn btn-primary btn-sm">Přidat poznámku</button>
+      </form>
+      <div class="notes-grid" id="notes-grid"></div>
+    </section>
+
+    <!-- CALENDAR -->
+    <section id="view-calendar" class="view">
+      <div class="admin-topbar"><div><h1 class="admin-title">Kalendář</h1><p class="admin-sub">Klikni na den pro přidání události — hodí se na follow-upy s klienty.</p></div></div>
+      <div class="panel glass">
+        <div class="cal-head">
+          <button class="btn-icon" id="cal-prev">‹</button>
+          <h3 id="cal-label"></h3>
+          <button class="btn-icon" id="cal-next">›</button>
+        </div>
+        <div class="cal-grid" id="cal-grid"></div>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section id="view-settings" class="view">
+      <div class="admin-topbar"><div><h1 class="admin-title">Nastavení</h1><p class="admin-sub">Heslo, export a import dat.</p></div></div>
+
+      <form id="password-form" class="panel glass">
+        <div class="panel-head"><h3>Změna hesla administrace</h3></div>
+        <div class="form-row">
+          <div class="f"><label>Současné heslo</label><input name="current" type="password" required></div>
+          <div class="f"><label>Nové heslo</label><input name="next" type="password" required></div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-sm">Změnit heslo</button>
+      </form>
+
+      <div class="panel glass">
+        <div class="panel-head"><h3>Export a import dat</h3></div>
+        <p style="color:var(--text-muted); font-size:.88rem; margin-bottom:16px;">Veškerý obsah je uložen lokálně v prohlížeči (LocalStorage). Export vytvoří zálohu ve formátu JSON.</p>
+        <div class="f-row-inline" style="gap:14px;">
+          <button id="export-btn" type="button" class="btn btn-ghost btn-sm">⬇ Exportovat data</button>
+          <label class="btn btn-ghost btn-sm" style="margin:0;">⬆ Importovat data<input id="import-input" type="file" accept="application/json" style="display:none;"></label>
+        </div>
+      </div>
+
+      <div class="panel glass">
+        <div class="panel-head"><h3>Vymazání cache</h3></div>
+        <p style="color:var(--text-muted); font-size:.88rem; margin-bottom:16px;">Obnoví veškerý obsah na výchozí ukázková data. Tuto akci nelze vrátit zpět.</p>
+        <button id="clear-cache-btn" type="button" class="btn btn-danger btn-sm">Vymazat cache</button>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- EVENT MODAL -->
+<div class="modal-overlay" id="event-modal">
+  <div class="modal-box glass" style="text-align:left; width:min(420px,90vw);">
+    <button id="event-modal-close" style="position:absolute; top:14px; right:18px; background:none; border:none; color:var(--text-muted); font-size:1.2rem;">✕</button>
+    <h3>Nová událost</h3>
+    <form id="event-form">
+      <div class="f"><label>Název</label><input name="title" required></div>
+      <div class="form-row">
+        <div class="f"><label>Datum</label><input name="date" type="date" required></div>
+        <div class="f"><label>Čas</label><input name="time" type="time"></div>
+      </div>
+      <div class="f"><label>Popis</label><textarea name="desc" rows="2"></textarea></div>
+      <div class="form-row">
+        <div class="f"><label>Barva</label><input name="color" type="color" value="#2ee6c8"></div>
+        <div class="f-row-inline"><input type="checkbox" name="reminder" id="ev-reminder"><label for="ev-reminder" style="margin:0;">Připomenutí</label></div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-sm" style="width:100%; justify-content:center;">Uložit událost</button>
+    </form>
+  </div>
+</div>
+
+<div class="toast"></div>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-database-compat.js"></script>
+<script src="data.js"></script>
+<script src="admin.js"></script>
+<script>if (window.lucide) lucide.createIcons();</script>
+</body>
+</html>
